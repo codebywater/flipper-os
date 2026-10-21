@@ -122,8 +122,8 @@ Unleashed»](#как-перенесены-функции-unleashed) ниже):
 Прошивка (нужны Linux/macOS, git и Python 3; тулчейн `fbt` скачает сам):
 
 ```sh
-git clone https://github.com/codebywater/flipper-os-
-cd flipper-os-
+git clone https://github.com/codebywater/flipper-os
+cd flipper-os
 firmware/build.sh                  # → firmware/unleashed/dist/f7-C/*.tgz
 firmware/build.sh flash_usb_full   # собрать и сразу прошить по USB
 FLIPPEROS_PACK=extra firmware/build.sh   # с Extra-паком приложений
