@@ -5,6 +5,8 @@
 `unlshd-093`). Внутри всё, что есть в Unleashed, плюс собственное приложение
 **Flipper OS Toolkit** прямо в главном меню.
 
+> **English summary.** Custom [Flipper Zero](https://flipperzero.one) firmware based on [Unleashed](https://github.com/DarkFlippers/unleashed-firmware). Adds a Flipper OS Toolkit app to the main menu, a branded desktop animation, and **Patrol**, a guard-tour log with HMAC-protected records that can be verified offline. Firmware packages are built and released by GitHub Actions. Docs below are in Russian.
+
 Что добавлено поверх Unleashed:
 
 - **Пункт «Flipper OS» в главном меню** с анимированной иконкой-чипом.
