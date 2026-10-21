@@ -57,7 +57,7 @@ reordering or inventing records is detected by the offline report page.
 **Supervisor, reviewing**
 
 Copy `SD:/apps_data/patrol/log.csv` (and any `log_N.csv`) to a computer, open
-`patrol-report.html`, choose the files, paste the site key and press *Verify*.
+`patrol-report.html`, choose the files, paste the site key and press *Verify & build report*.
 
 ## Files
 

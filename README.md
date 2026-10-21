@@ -1,11 +1,11 @@
 # FlipperOS
 
-Кастомная прошивка для [Flipper Zero](https://flipperzero.one) на базе
+Кастомная прошивка для [Flipper Zero](https://flipper.net) на базе
 [Unleashed](https://github.com/DarkFlippers/unleashed-firmware) (релиз
 `unlshd-093`). Внутри всё, что есть в Unleashed, плюс собственное приложение
 **Flipper OS Toolkit** прямо в главном меню.
 
-> **English summary.** Custom [Flipper Zero](https://flipperzero.one) firmware based on [Unleashed](https://github.com/DarkFlippers/unleashed-firmware). Adds a Flipper OS Toolkit app to the main menu, a branded desktop animation, and **Patrol**, a guard-tour log with HMAC-protected records that can be verified offline. Firmware packages are built and released by GitHub Actions. Docs below are in Russian.
+> **English summary.** Custom [Flipper Zero](https://flipper.net) firmware based on [Unleashed](https://github.com/DarkFlippers/unleashed-firmware). Adds a Flipper OS Toolkit app to the main menu, a branded desktop animation, and **Patrol**, a guard-tour log with HMAC-protected records that can be verified offline. Firmware packages are built and released by GitHub Actions. Docs below are in Russian.
 
 Что добавлено поверх Unleashed:
 
@@ -43,7 +43,7 @@ HMAC-SHA-256 по цепочке, ключ зашифрован анклавом
 | **Dice Roller** | От 1 до 4 костей d4…d100 с анимацией и вибро | ↑/↓ — грани, ←/→ — количество, OK — бросок |
 | **Coin & 8-Ball** | Монетка (орёл/решка), «Да/Нет» со счётом результатов и Magic 8-Ball с 20 классическими ответами | ←/→ — режим, OK — бросок/вопрос |
 | **Password Gen** | Генератор паролей и PIN-кодов на аппаратном ГСЧ: 4…32 символа, 4 набора символов (гарантированно есть символ каждого класса), оценка энтропии в битах | ↑/↓ — длина, ←/→ — набор символов, OK — новый пароль |
-| **Morse Beacon** | Сообщение азбукой Морзе через LED, LED+вибро или LED+звук. Есть свой текст с экранной клавиатуры (буквы и цифры, `_` — пробел) | ←/→ — сообщение, ↑ — выход, ↓ — повтор, OK — старт/стоп, удержание OK на «своём тексте» — редактировать |
+| **Morse Beacon** | Сообщение азбукой Морзе через LED, LED+вибро или LED+звук. Есть свой текст с экранной клавиатуры (буквы и цифры, `_` — пробел) | ←/→ — сообщение, ↑ — способ вывода (LED/вибро/звук), ↓ — повтор, OK — старт/стоп, удержание OK на «своём тексте» — редактировать |
 | **Snake** | «Змейка» 32×14 с ускорением. Два режима: сквозные края или стены, у каждого свой рекорд | Стрелки — поворот, OK — старт/пауза, ↑/↓ между играми — режим |
 | **Reaction Test** | Тест реакции: после случайной паузы экран и LED вспыхивают, нужно нажать любую кнопку. Время в мс, среднее за 5 попыток, рекорд. Фальстарт засчитывается | OK — начать, любая кнопка — реакция |
 | **Tally Counter** | Счётчик с шагом 1…100 | OK — плюс, ← — минус, удержание ← — сброс, ↑/↓ — шаг |
@@ -67,14 +67,16 @@ HMAC-SHA-256 по цепочке, ключ зашифрован анклавом
 Unleashed, подключённого субмодулем (см. [«Как перенесены функции
 Unleashed»](#как-перенесены-функции-unleashed) ниже):
 
-- **SubGHz** — расширенный список поддерживаемых протоколов ворот/шлагбаумов/
-  сигнализаций сверх официальной прошивки, приём и повтор на частотах вне
-  заводского региона (по умолчанию выключено, включается файлом-флагом
+- **SubGHz** — расширенный список поддерживаемых протоколов ворот/шлагбаумов/сигнализаций
+  сверх официальной прошивки, приём и передача без региональных ограничений
+  (в Unleashed они сняты всегда), расширение частотного диапазона за пределы
+  спецификации CC1101 (по умолчанию выключено, включается в файле
   `dangerous_settings` на SD, см. ниже), сохранение и повтор сырых сигналов,
   режим анализа частоты (Frequency Analyzer), поддержка внешних модулей
   (SubGHz Rx/Tx-модули на CC1101).
-- **125 кГц RFID (LF-RFID)** — чтение, запись, эмуляция и брутфорс EM4100 и
-  совместимых карт с добавочными настройками из Unleashed.
+- **125 кГц RFID (LF-RFID)** — чтение, запись и эмуляция EM4100 и
+  совместимых карт с добавочными настройками из Unleashed; брутфорс — приложением
+  RFID Fuzzer из пака приложений (см. ниже).
 - **NFC** — чтение/эмуляция/запись Mifare Classic/Ultralight/DESFire,
   восстановление ключей Mifare Classic (mfkey), больше NFC-словарей ключей,
   чем в официальной прошивке.
@@ -85,11 +87,12 @@ Unleashed»](#как-перенесены-функции-unleashed) ниже):
   скрипта.
 - **GPIO** — управление пинами, USB-UART bridge, 1-Wire.
 - **U2F** — аппаратный ключ двухфакторной аутентификации.
-- **Bluetooth/BLE** — расширенные настройки сопряжения и профиля клавиатуры/
-  мыши по BLE (наследие Unleashed).
-- **Настройки региона и мощности** — можно вручную выбрать регион и включить
-  расширенный диапазон/мощность передачи через `dangerous_settings`
-  (файл `yes_i_want_to_destroy_my_flipper` в `/ext/subghz/assets/`).
+- **Bluetooth/BLE** — расширенные настройки сопряжения и профиля клавиатуры/мыши
+  по BLE (наследие Unleashed).
+- **Расширенный диапазон частот Sub-GHz** — региональных ограничений на передачу
+  в Unleashed нет; кроме того, диапазон можно расширить до 281–361, 378–481 и
+  749–962 МГц: в файле `/ext/subghz/assets/dangerous_settings` замените
+  `yes_i_want_to_destroy_my_flipper: false` на `true`.
   **В нашей сборке это, как и в Unleashed, выключено по умолчанию** — включать
   сознательно и на свою ответственность: передача вне сертифицированных
   диапазонов может быть незаконна в вашей стране и потенциально
@@ -109,7 +112,7 @@ Unleashed»](#как-перенесены-функции-unleashed) ниже):
      приложений** (то же, что в обычном релизе Unleashed);
    - `flipper-z-f7-update-flipperos-<версия>e.tgz` — то же + **Extra-пак**
      (все известные рабочие приложения сообщества, около 360 штук).
-2. В [qFlipper](https://flipperzero.one/update) нажмите
+2. В [qFlipper](https://flipper.net/pages/downloads) нажмите
    **Install from file** и выберите этот `.tgz`.
 
    Без компьютера: распакуйте архив в `update/` на SD-карте и на Flipper
@@ -119,7 +122,7 @@ Unleashed»](#как-перенесены-функции-unleashed) ниже):
 
 ## Сборка
 
-Прошивка (нужны Linux/macOS, git и Python 3; тулчейн `fbt` скачает сам):
+Прошивка (нужны Linux или macOS, git, curl и Python 3; на macOS — GNU `sha256sum` из coreutils в `PATH`, системный `/sbin/sha256sum` не понимает `--status`; тулчейн `fbt` скачает сам):
 
 ```sh
 git clone https://github.com/codebywater/flipper-os
@@ -170,7 +173,7 @@ FIRMWARE_APPS["default"].append("flipper_os")   # append, а не замена �
 Поэтому все приложения из штатного набора Unleashed (`main_apps`,
 `system_apps`, `settings_apps`) остаются в прошивке без изменений — включая
 `dangerous_settings` и прочее, описанное выше. Подробный список того, что
-именно добавлено сверху Unleashed, — в первом разделе этого README.
+именно добавлено поверх Unleashed, — в первом разделе этого README.
 
 **Приложения сообщества** (Sub-GHz bruteforce, анализатор спектра, ESP32 /
 NRF24 / GPS, игры и т. д.) в исходники Unleashed не входят: его релизы
@@ -202,7 +205,7 @@ firmware/
 │   └── 0001-flipperos-desktop-animation.patch   анимация в манифесте дельфина
 ├── tools/make_animation.py генератор кадров анимации (нужен Pillow)
 ├── tools/check_package.py  проверка, что в .tgz есть паки приложений
-└── build.sh                сброс → патчи → overlay → приложения → ./fbt
+└── build.sh                сброс → патчи → паки приложений → overlay → приложения → ./fbt
 patrol/                     приложение Patrol (журнал обходов)
 companion/patrol-report.html  офлайн-проверка журналов Patrol
 tests/run_patrol_tests.sh   тесты HMAC и проверки журналов
@@ -210,7 +213,7 @@ docs/PATROL_BUSINESS.md     анализ рынка и монетизация
 ```
 
 Unleashed не копируется в репозиторий целиком, а подключён субмодулем.
-Поэтому переход на новую версию сводится к одной команде:
+Поэтому переход на новую версию сводится к смене коммита субмодуля (команды ниже) и закреплённого релиза паков в `firmware/build.sh` (`PLUGINS_URL`, `PLUGINS_BASE_SHA256`, `PLUGINS_EXTRA_SHA256`):
 
 ```sh
 cd firmware/unleashed && git fetch --depth 1 origin tag unlshd-XXX && git checkout unlshd-XXX
